@@ -1,12 +1,13 @@
 package com.vokrob.level
 
-import android.content.Context
+import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         val tvSensor = findViewById<TextView>(R.id.tvSensor)
         val lRotation = findViewById<LinearLayout>(R.id.lRotation)
-        sManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sManager = getSystemService(SENSOR_SERVICE) as SensorManager
         val sensor = sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         val sensor2 = sManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         val sListener = object : SensorEventListener {
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity() {
 
                 val degree = values[2] * 57.295779513f
                 val rotate = 270 + degree
-                lRotation.rotation = rotate
+
+                rotateView(lRotation, rotate) // Используйте ваш метод для анимации
 
                 val rData = 90 + degree
                 val color = if (rData.toInt() == 0) {
@@ -67,8 +69,14 @@ class MainActivity : AppCompatActivity() {
         sManager.registerListener(sListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
         sManager.registerListener(sListener, sensor2, SensorManager.SENSOR_DELAY_NORMAL)
     }
-}
 
+    private fun rotateView(view: LinearLayout, angle: Float) {
+        val animator = ObjectAnimator.ofFloat(view, "rotation", view.rotation, angle)
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.duration = 500
+        animator.start()
+    }
+}
 
 
 
